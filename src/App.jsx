@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useReducer } from "react";
 import React from "react";
 import "./App.css";
 import eddie from "./images/eddie.jpg";
@@ -25,11 +25,14 @@ const dishObjects = items.map((dish, i) => ({
   title: dish,
 }));
 
-function Main({ dishes }) {
+function Main({ dishes, openStatus, onStatus }) {
   return (
     <>
       <div>
-        <h2>Welcome to this beautiful restaurant</h2>
+        <button onClick={() => onStatus(true)}>I want to be open</button>
+        <h2>
+          Welcome to this beautiful restaurant! {openStatus ? "Open" : "Closed"}
+        </h2>
       </div>
       <main>
         <img
@@ -50,16 +53,18 @@ function Main({ dishes }) {
 }
 
 function App() {
-  const [status, setStatus] = useState(true);
+  const [status, toggle] = useReducer((status) => !status, true);
+
+  useEffect(() => {
+    console.log('The restaurant is ${status ? "open" : "closed"} ');
+  }, []);
 
   return (
     <div>
       <h1>The Restaurant is currently {status ? "Open" : "Closed"}.</h1>
-      <button onClick={() => setStatus(!status)}>
-        {status ? "Closed" : "Open"} Restaurant
-      </button>
+      <button onClick={toggle}>{status ? "Closed" : "Open"} Restaurant</button>
       <Header name="Alex" year={new Date().getFullYear()} />
-      <Main dishes={dishObjects} />
+      <Main dishes={dishObjects} openStatus={status} onStatus={toggle} />
     </div>
   );
 }
